@@ -1,22 +1,27 @@
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
+import LoadingSpinner from "./components/ui/loading";
 import { useRoutes, Routes, Route } from "react-router-dom";
-import Home from "./components/home";
-import ServicesPage from "./pages/Services";
-import AboutPage from "./pages/About";
-import PortfolioPage from "./pages/Portfolio";
-import Gallery from "./components/Gallery";
-import ContactPage from "./pages/Contact";
-import AdminLayout from "./components/admin/Layout";
-import Dashboard from "./pages/admin/Dashboard";
-import GalleryManagement from "./pages/admin/GalleryManagement";
-import PortfolioManagement from "./pages/admin/PortfolioManagement";
-import AdminLogin from "./pages/admin/Login";
-import AuthGuard from "./components/admin/AuthGuard";
+
+// Lazy load components
+const Home = lazy(() => import("./components/home"));
+const ServicesPage = lazy(() => import("./pages/Services"));
+const AboutPage = lazy(() => import("./pages/About"));
+const PortfolioPage = lazy(() => import("./pages/Portfolio"));
+const Gallery = lazy(() => import("./components/Gallery"));
+const ContactPage = lazy(() => import("./pages/Contact"));
+const AdminLayout = lazy(() => import("./components/admin/Layout"));
+const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+const GalleryManagement = lazy(() => import("./pages/admin/GalleryManagement"));
+const PortfolioManagement = lazy(
+  () => import("./pages/admin/PortfolioManagement"),
+);
+const AdminLogin = lazy(() => import("./pages/admin/Login"));
+const AuthGuard = lazy(() => import("./components/admin/AuthGuard"));
 import routes from "tempo-routes";
 
 function App() {
   return (
-    <Suspense fallback={<p>Loading...</p>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <>
         <Routes>
           <Route path="/" element={<Home />} />

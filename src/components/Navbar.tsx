@@ -50,12 +50,14 @@ const Navbar = () => {
               >
                 Galeria
               </Link>
-              <Button
-                variant="outline"
-                className="text-white border-white/20 hover:bg-white/10"
-              >
-                Contato
-              </Button>
+              <Link to="/contato">
+                <Button
+                  variant="outline"
+                  className="text-white border-white/20 hover:bg-white/10"
+                >
+                  Contato
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

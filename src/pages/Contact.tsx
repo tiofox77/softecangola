@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const ContactInfo = ({
   icon,
@@ -25,6 +26,56 @@ const ContactInfo = ({
 );
 
 const ContactPage = () => {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Using EmailJS or similar service would be better in production
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "YOUR_WEB3FORMS_KEY", // Replace with your key
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+          to_email: "softecangola@gmail.com",
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Mensagem enviada!",
+          description: "Entraremos em contato em breve.",
+        });
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        throw new Error("Failed to send message");
+      }
+    } catch (error) {
+      toast({
+        title: "Erro ao enviar mensagem",
+        description: "Por favor, tente novamente mais tarde.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black">
       <Navbar />
@@ -55,36 +106,61 @@ const ContactPage = () => {
               <h2 className="text-2xl font-bold text-white mb-6">
                 Envie sua mensagem
               </h2>
-              <form className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Input
                       placeholder="Seu nome"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       className="bg-gray-800 border-gray-700 text-white"
+                      required
                     />
                   </div>
                   <div>
                     <Input
                       type="email"
                       placeholder="Seu email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       className="bg-gray-800 border-gray-700 text-white"
+                      required
                     />
                   </div>
                 </div>
                 <div>
                   <Input
                     placeholder="Assunto"
+                    value={formData.subject}
+                    onChange={(e) =>
+                      setFormData({ ...formData, subject: e.target.value })
+                    }
                     className="bg-gray-800 border-gray-700 text-white"
+                    required
                   />
                 </div>
                 <div>
                   <Textarea
                     placeholder="Sua mensagem"
+                    value={formData.message}
+                    onChange={(e) =>
+                      setFormData({ ...formData, message: e.target.value })
+                    }
                     className="bg-gray-800 border-gray-700 text-white min-h-[150px]"
+                    required
                   />
                 </div>
-                <Button size="lg" className="w-full">
-                  Enviar Mensagem
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
                 </Button>
               </form>
             </motion.div>
@@ -103,7 +179,7 @@ const ContactPage = () => {
               <ContactInfo
                 icon={<Mail className="w-5 h-5" />}
                 title="Email"
-                content="contato@softecangola.com"
+                content="softecangola@gmail.com"
               />
               <ContactInfo
                 icon={<MapPin className="w-5 h-5" />}
